@@ -7,14 +7,15 @@ This is the monitor Discord Bot for the TBOT Army
 
 ## Features
 
-- Discord commands: !parity, !price and !pong
+- Discord commands: !parity, !price and !ping
 - Scraps and sends TBOT Parity from Uniswap's Liquidity Pool
 - Scraps and saves TBOT Pricing from Uniswap
+- Premade reply messages stored in the database for custom commands
 
 ## ToDo Features
 
 - Pricing Charts
-- ...
+- more
 
 
 ## Installation
