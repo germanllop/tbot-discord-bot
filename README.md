@@ -2,7 +2,7 @@
 ## Price Alerts and Charts for Tbot
 
 This is the monitor Discord Bot for the TBOT Army
-### Libraries
+
 > Node.js, Discord.js, Uniswap SDK, Ethers.js, Web3, Mongoose, Express.js, Puppeteer and Chart.js.
 
 ## Features
