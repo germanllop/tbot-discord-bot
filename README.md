@@ -19,9 +19,9 @@ This is the monitor Discord Bot for the TBOT Army
 
 ## Installation
 
-Requires:
-[Node.js](https://nodejs.org/) v10+ to run.
-[Mongo DB](https://www.mongodb.com/)
+### Requires:
+- [Node.js](https://nodejs.org/)
+- [Mongo DB](https://www.mongodb.com/)
 
 Install the dependencies and devDependencies and start the server in development monde.
 
