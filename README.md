@@ -3,7 +3,7 @@
 
 This is the monitor Discord Bot for the TBOT Army
 
-> Node.js, Discord.js, Uniswap SDK, Ethers.js, Web3, Mongoose, Express.js, Puppeteer and Chart.js.
+> Node.js, Discord.js, Uniswap SDK, Ethers.js, Web3, Mongoose, Express.js, Puppeteer, SIA Skynet, and Chart.js.
 
 ## Features
 

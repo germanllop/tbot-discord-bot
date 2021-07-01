@@ -21,6 +21,7 @@ const api = require('./api')
 // app.use('/', auth, api)
 
 cron.JobPrice.start() // Starts desired cronjob
+cron.JobLiquidity.start() // Starts desired cronjob
 
 // app.listen(port, () => {
 //     console.log(`App listening at http://localhost:${port}`)

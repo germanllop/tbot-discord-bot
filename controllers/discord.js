@@ -1,7 +1,8 @@
 const Discord = require('discord.js')
 const Reply = require('../models/reply')
 const Price = require('../models/price')
-const Screenshot = require('../controllers/screenshot')
+const Liquidity = require('../models/liquidity')
+// const Screenshot = require('../controllers/screenshot')
 
 const prefix = '!'
 
@@ -37,39 +38,78 @@ const discordController = async function (message) {
 
       message.reply(reply.reply) // Send predefined text replies, like ping pong
 
-    }else if (command === "parity" && message.channel.name === process.env.TEXT_CHANNEL) {
+    } else if (command === "price" && message.channel.name === process.env.TEXT_CHANNEL) {
+      const price = await Price.findOne({}, {}, {
+        sort: {
+          'createdAt': -1
+        }
+      })
 
-      const imageLink = await Screenshot.getParity()
-
-      setTimeout(()=>{
-        const matchDetails = new Discord.MessageEmbed()
-        .setColor('#7289da')
-        .setTitle('Parity TBOT-ETH Liquidity Pool')
-        .setAuthor('t-botmonitor', 'https://cdn.discordapp.com/icons/856686688034226187/779e516a1bf47d474b11074f6f91e5e7.png?size=128', 'https://tbotarmy.com')
-        .setImage(imageLink)
-        .setTimestamp()
-
-        message.channel.send(matchDetails)
-      },2000)
-
-    }else if (command === "price" && message.channel.name === process.env.TEXT_CHANNEL){
-      const price = await Price.findOne({},{},{sort:{ 'createdAt' : -1 } })
-
-      setTimeout(()=>{
+      setTimeout(() => {
         const embed = new Discord.MessageEmbed()
-        .setColor('#7289da')
-        .setTitle('TBOT Current Trading Price')
-        .setAuthor('t-botmonitor', 'https://cdn.discordapp.com/icons/856686688034226187/779e516a1bf47d474b11074f6f91e5e7.png?size=128', 'https://tbotarmy.com')
-        .addFields(
-          { name: 'ETH-TBOT', value: `${price.ethTbot.replace('WETH9','ETH')}`},
-          { name: 'TBOT-ETH', value: `${price.tbotEth.replace('WETH9','ETH')}`}
-        )
-        .setTimestamp()
+          .setColor('#7289da')
+          .setTitle('TBOT Current Trading Price')
+          .setAuthor('t-botmonitor', 'https://cdn.discordapp.com/icons/856686688034226187/779e516a1bf47d474b11074f6f91e5e7.png?size=128', 'https://tbotarmy.com')
+          .addFields({
+            name: '1 ETH',
+            value: `${price.ethTbot.split('= ')[1]}`,
+            inline: true
+          }, {
+            name: '1 TBOT',
+            value: `${price.tbotEth.replace('WETH9','ETH').split('= ')[1]}`,
+            inline: true
+          })
+          .setTimestamp()
 
         message.channel.send(embed)
-      },2000)
-    }else if (command === "graph" && message.channel.name === process.env.TEXT_CHANNEL){
-      const price = await Price.findOne({},{},{sort:{ 'createdAt' : -1 } })
+      }, 2000)
+    } else if (command === "graph" && message.channel.name === process.env.TEXT_CHANNEL) {
+      const price = await Price.findOne({}, {}, {
+        sort: {
+          'createdAt': -1
+        }
+      })
+    } else if (command === "liquidity" && message.channel.name === process.env.TEXT_CHANNEL) {
+      const liquidity = await Liquidity.findOne({}, {}, {
+        sort: {
+          'createdAt': -1
+        }
+      })
+
+      setTimeout(() => {
+        const embed = new Discord.MessageEmbed()
+          .setColor('#7289da')
+          .setTitle('TBOT Current Uniswap Liquidity')
+          .setAuthor('t-botmonitor', 'https://cdn.discordapp.com/icons/856686688034226187/779e516a1bf47d474b11074f6f91e5e7.png?size=128', 'https://tbotarmy.com')
+          .addFields({
+            name: '1 ETH',
+            value: `${liquidity.ethTbot.split('= ')[1]}`,
+            inline: true
+          }, {
+            name: '1 TBOT',
+            value: `${liquidity.tbotEth.split('= ')[1]}`,
+            inline: true
+          }, {
+            name: 'Total Tokens Locked',
+            value: `TBOT: ${liquidity.tbotLocked} / ETH: ${liquidity.ethLocked}`
+          }, {
+            name: 'TVL',
+            value: `${liquidity.tvl}`,
+            inline: true
+          }, {
+            name: 'Volume 24h',
+            value: `${liquidity.volume24h}`,
+            inline: true
+          }, {
+            name: '24h Fees',
+            value: `${liquidity.fees24h}`,
+            inline: true
+          })
+          .setTimestamp()
+
+        message.channel.send(embed)
+      }, 2000)
+
     }
 
     if (message.author.id != process.env.ADM_ID) {

@@ -3,10 +3,10 @@ const puppeteer = require('puppeteer')
 const skynet = require('@nebulous/skynet')
 const client = new skynet.SkynetClient()
 const Price = require('../models/price')
+const Liquidity = require('../models/liquidity')
 const fs = require('fs')
 
-
-const JobPrice = new CronJob('00 */5 * * * *', async function() {
+const JobPrice = new CronJob('00 */5 * * * *', async function () {
 
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
@@ -20,30 +20,66 @@ const JobPrice = new CronJob('00 */5 * * * *', async function() {
   await page.type('#swap-currency-input > div > div > input', '1')
   await page.waitForSelector('#swap-page > div > div > div:nth-child(2) > button > div > div')
   const elem = await page.$('#swap-page > div > div > div:nth-child(2) > button > div > div')
-  await elem.screenshot({path:'price1.jpg'})
-  const price1 = await elem.evaluate(el=>el.textContent)
+  const ethTbot = await elem.evaluate(el => el.textContent)
   await elem.click()
-  const price2 = await elem.evaluate(el=>el.textContent)
-  console.log(price1,price2)
-  await elem.screenshot({path:'price2.jpg'})
+  const tbotEth = await elem.evaluate(el => el.textContent)
 
-  const skylink1 = await client.uploadFile('price1.jpg')
-  const skylink2 = await client.uploadFile('price2.jpg')
-  fs.unlinkSync('price1.jpg')
-  fs.unlinkSync('price2.jpg')
-
-  const priceImpact = await (await page.$('reach-portal > div > div > div > div:nth-child(3) > div:nth-child(2) > div' )).evaluate(el=>el.textContent)
+  const priceImpact = await (await page.$('reach-portal > div > div > div > div:nth-child(3) > div:nth-child(2) > div')).evaluate(el => el.textContent)
 
   await browser.close()
   const savedPrice = await Price.create({
-    ethTbot:price1,
-    ethTbotImage:skylink1.replace('sia://','https://siasky.net/'),
-    tbotEth:price2,
-    tbotEthImage:skylink2.replace('sia://','https://siasky.net/'),
-    priceImpact:priceImpact
+    ethTbot,
+    tbotEth,
+    priceImpact
   })
   console.log(savedPrice)
 
 })
 
-module.exports = {JobPrice}
+const JobLiquidity = new CronJob('30 7/10 * * * *', async function () {
+
+  const browser = await puppeteer.launch()
+  const page = await browser.newPage()
+  const pageConfig = {
+    waitUntil: 'networkidle2'
+  }
+
+  await page.goto('https://info.uniswap.org/#/pools/0xb6c05fb8d5a242d92e72ce63c58ec94d93d11060', pageConfig)
+  await page.waitForSelector('#root > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1)')
+  const tbotEthElement = await page.$('#root > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > a:nth-child(1) > div > div > div')
+  const ethTbotElement = await page.$('#root > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) > div:nth-child(2) > a:nth-child(2) > div > div > div')
+
+  const tbotLockedElement = await page.$('#root > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > div > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2) ')
+  const ethLockedElement = await page.$('#root > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > div > div:nth-child(1) > div > div:nth-child(3) > div:nth-child(2)')
+
+  const tvlElement = await page.$('#root > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > div > div:nth-child(2) > div:nth-child(2)')
+  const volume24hElement = await page.$('#root > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > div > div:nth-child(3) > div:nth-child(2)')
+  const fees24hElement = await page.$('#root > div > div:nth-child(2) > div:nth-child(3) > div:nth-child(2) > div:nth-child(3) > div:nth-child(1) > div > div:nth-child(4) > div:nth-child(2)')
+
+  const tbotEth = await tbotEthElement.evaluate(el => el.textContent).catch(err => console.log(err))
+  const ethTbot = await ethTbotElement.evaluate(el => el.textContent).catch(err => console.log(err))
+  const tbotLocked = await tbotLockedElement.evaluate(el => el.textContent).catch(err => console.log(err))
+  const ethLocked = await ethLockedElement.evaluate(el => el.textContent).catch(err => console.log(err))
+  const tvl = await tvlElement.evaluate(el => el.textContent).catch(err => console.log(err))
+  const volume24h = await volume24hElement.evaluate(el => el.textContent).catch(err => console.log(err))
+  const fees24h = await fees24hElement.evaluate(el => el.textContent).catch(err => console.log(err))
+
+  await browser.close()
+  const savedLiquidity = await Liquidity.create({
+    tbotEth,
+    ethTbot,
+    tbotLocked,
+    ethLocked,
+    tvl,
+    volume24h,
+    fees24h
+  })
+  console.log(savedLiquidity)
+
+})
+
+
+module.exports = {
+  JobPrice,
+  JobLiquidity
+}
