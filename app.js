@@ -17,15 +17,17 @@ app.use(morgan('dev'))
 mongoose.connect(process.env.DATABASE_URL, mongooseOptions).catch(err=>console.log(`MongoDB Error: ${err.message}`))
 
 const client = require('./config/discord')
+
+app.use(express.static('public'))
 const api = require('./api')
-// app.use('/', auth, api)
+app.use('/api', api)
 
 cron.JobPrice.start() // Starts desired cronjob
 cron.JobLiquidity.start() // Starts desired cronjob
 
-// app.listen(port, () => {
-//     console.log(`App listening at http://localhost:${port}`)
-// })
+app.listen(port, () => {
+    console.log(`App listening at http://localhost:${port}`)
+})
 
 client.login(process.env.BOT_TOKEN)
 
