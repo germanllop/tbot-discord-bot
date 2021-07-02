@@ -61,8 +61,12 @@ const discordController = async function (message) {
             inline: true
           },
           {
+            name: '1 ETH',
+            value: `${parseFloat(price.ethUsdc).toFixed(2)} USDC`, // ethusdc
+          },
+          {
             name: '1 TBOT',
-            value: `${parseFloat(price.ethUsdc)/parseFloat(price.ethTbot.split('= ')[1].replace('TBOT'))} USDC`, // ethusdc / ethtbot
+            value: `${(parseFloat(price.ethUsdc)/parseFloat(price.ethTbot.split('= ')[1].replace('TBOT'))).toFixed(2)} USDC`, // ethusdc / ethtbot = tbotusdc
             inline: true
           }
           )
