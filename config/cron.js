@@ -1,10 +1,21 @@
 const CronJob = require('cron').CronJob
 const puppeteer = require('puppeteer')
-const skynet = require('@nebulous/skynet')
-const client = new skynet.SkynetClient()
+// const skynet = require('@nebulous/skynet')
+// const client = new skynet.SkynetClient()
 const Price = require('../models/price')
 const Liquidity = require('../models/liquidity')
 const fs = require('fs')
+
+const {
+  ChainId,
+  WETH,
+  Fetcher,
+  Route
+} = require('@uniswap/sdk')
+const ethers = require('ethers')
+const Web3 = require('web3')
+const provider = new ethers.providers.EtherscanProvider('homestead', process.env.ETHSCAN_API)
+const chainId = ChainId.MAINNET
 
 const JobPrice = new CronJob('00 */5 * * * *', async function () {
 
@@ -27,11 +38,28 @@ const JobPrice = new CronJob('00 */5 * * * *', async function () {
   const priceImpact = await (await page.$('reach-portal > div > div > div > div:nth-child(3) > div:nth-child(2) > div')).evaluate(el => el.textContent)
 
   await browser.close()
+
+
+  // const tokenAddressTBOT = await Web3.utils.toChecksumAddress('0xa4f2fdb0a5842d62bbaa5b903f09687b85e4bf59')
+  const tokenAddressUSDC = await Web3.utils.toChecksumAddress('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48')
+
+  const USDC = await Fetcher.fetchTokenData(chainId, tokenAddressUSDC, provider)
+
+  const pair = await Fetcher.fetchPairData(USDC, WETH[USDC.chainId], provider)
+
+  const route = new Route([pair], WETH[USDC.chainId])
+
+  const ethUsdc = route.midPrice.toSignificant(6)
+  const usdcEth = route.midPrice.invert().toSignificant(6)
+
   const savedPrice = await Price.create({
     ethTbot,
     tbotEth,
+    ethUsdc,
+    usdcEth,
     priceImpact
   })
+
   console.log(savedPrice)
 
 })

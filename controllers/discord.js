@@ -38,7 +38,8 @@ const discordController = async function (message) {
 
       message.reply(reply.reply) // Send predefined text replies, like ping pong
 
-    } else if (command === "price" && message.channel.name === process.env.TEXT_CHANNEL) {
+    // } else if (command === "price" && message.channel.name === process.env.TEXT_CHANNEL) { // If there is only one channel to respond
+    } else if (command === "price") {
       const price = await Price.findOne({}, {}, {
         sort: {
           'createdAt': -1
@@ -58,18 +59,24 @@ const discordController = async function (message) {
             name: '1 TBOT',
             value: `${price.tbotEth.replace('WETH9','ETH').split('= ')[1]}`,
             inline: true
-          })
+          },
+          // {
+          //   name: '1 TBOT',
+          //   value: `${parseFloat(price.ethUsdc)/parseFloat(price.ethTbot.split('= ')[1].replace('TBOT'))} USDC`, // ethusdc / ethtbot
+          //   inline: true
+          // }
+          )
           .setTimestamp()
 
         message.channel.send(embed)
       }, 2000)
-    } else if (command === "graph" && message.channel.name === process.env.TEXT_CHANNEL) {
+    } else if (command === "graph") {
       const price = await Price.findOne({}, {}, {
         sort: {
           'createdAt': -1
         }
       })
-    } else if (command === "liquidity" && message.channel.name === process.env.TEXT_CHANNEL) {
+    } else if (command === "liquidity") {
       const liquidity = await Liquidity.findOne({}, {}, {
         sort: {
           'createdAt': -1

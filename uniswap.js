@@ -6,21 +6,17 @@
   const Web3 = require('web3')
   const provider = new ethers.providers.EtherscanProvider('homestead',process.env.ETHSCAN_API)
   const chainId = ChainId.MAINNET
-  const tokenAddress = await Web3.utils.toChecksumAddress('0xa4f2fdb0a5842d62bbaa5b903f09687b85e4bf59')
+  // const tokenAddressTBOT = await Web3.utils.toChecksumAddress('0xa4f2fdb0a5842d62bbaa5b903f09687b85e4bf59')
+  const tokenAddressUSDC = await Web3.utils.toChecksumAddress('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48')
 
-  // const TBOT = new Token(chainId, tokenAddress, 18)
-  const TBOT = await Fetcher.fetchTokenData(chainId, tokenAddress, provider)
+  const USDC = await Fetcher.fetchTokenData(chainId, tokenAddressUSDC, provider)
 
-  const TBOT3 = awa
+  const pair = await Fetcher.fetchPairData(USDC, WETH[USDC.chainId], provider)
 
-  // note that you may want/need to handle this async code differently,
-  // for example if top-level await is not an option
-  const pair = await Fetcher.fetchPairData(TBOT, WETH[TBOT.chainId], provider)
+  const route = new Route([pair], WETH[USDC.chainId])
 
-  const route = new Route([pair], WETH[TBOT.chainId])
+  console.log('1ETH ',route.midPrice.toSignificant(6))
+  console.log('1USDC '+route.midPrice.invert().toSignificant(6))
 
-  console.log(route.midPrice.toSignificant(6))
-  console.log(route.midPrice.invert().toSignificant(6))
-
-  console.log(pair)
+  // console.log(pair)
 })().catch(err=>console.log(err))

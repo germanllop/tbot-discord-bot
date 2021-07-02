@@ -13,6 +13,14 @@ const priceSchema = new mongoose.Schema({
     type:String,
     default:''
   },
+  ethUsdc:{
+    type:String,
+    default:''
+  },
+  usdcEth:{
+    type:String,
+    default:''
+  },
   tbotEthImage:{
     type:String,
     default:''
