@@ -60,11 +60,11 @@ const discordController = async function (message) {
             value: `${price.tbotEth.replace('WETH9','ETH').split('= ')[1]}`,
             inline: true
           },
-          // {
-          //   name: '1 TBOT',
-          //   value: `${parseFloat(price.ethUsdc)/parseFloat(price.ethTbot.split('= ')[1].replace('TBOT'))} USDC`, // ethusdc / ethtbot
-          //   inline: true
-          // }
+          {
+            name: '1 TBOT',
+            value: `${parseFloat(price.ethUsdc)/parseFloat(price.ethTbot.split('= ')[1].replace('TBOT'))} USDC`, // ethusdc / ethtbot
+            inline: true
+          }
           )
           .setTimestamp()
 
