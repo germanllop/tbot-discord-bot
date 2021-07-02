@@ -60,9 +60,11 @@ const discordController = async function (message) {
             value: `${price.tbotEth.replace('WETH9','ETH').split('= ')[1]}`,
             inline: true
           },
+          { name: '\u200B', value: '\u200B' },
           {
             name: '1 ETH',
             value: `${parseFloat(price.ethUsdc).toFixed(2)} USDC`, // ethusdc
+            inline: true
           },
           {
             name: '1 TBOT',
