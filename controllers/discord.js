@@ -2,7 +2,7 @@ const Discord = require('discord.js')
 const Reply = require('../models/reply')
 const Price = require('../models/price')
 const Liquidity = require('../models/liquidity')
-// const Screenshot = require('../controllers/screenshot')
+const {takeScreenshot} = require('../controllers/screenshot')
 
 const prefix = '!'
 
@@ -77,11 +77,21 @@ const discordController = async function (message) {
         message.channel.send(embed)
       }, 2000)
     } else if (command === "graph") {
-      const price = await Price.findOne({}, {}, {
-        sort: {
-          'createdAt': -1
-        }
-      })
+      const url = 'https://www.dextools.io/app/uniswap/pair-explorer/0xb6c05fb8d5a242d92e72ce63c58ec94d93d11060'
+      const selector = 'body > div.js-rootresizer__contents'
+      const shot = await takeScreenshot(url,selector)
+
+      setTimeout(() => {
+        const embed = new Discord.MessageEmbed()
+          .setColor('#7289da')
+          .setTitle('ETH/TBOT Price Graph')
+          .setAuthor('t-botmonitor', 'https://cdn.discordapp.com/icons/856686688034226187/779e516a1bf47d474b11074f6f91e5e7.png?size=128', 'https://tbotarmy.com')
+          .setImage(shot)
+          .setTimestamp()
+
+        message.channel.send(embed)
+      }, 2000)
+
     } else if (command === "liquidity") {
       const liquidity = await Liquidity.findOne({}, {}, {
         sort: {
