@@ -32,6 +32,10 @@ const priceSchema = new mongoose.Schema({
   priceImpact:{
     type:String,
     default:'0%'
+  },
+  fiveM:{
+    type: Object,
+    default:null
   }
 },{
   timestamps:true

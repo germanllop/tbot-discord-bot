@@ -3,6 +3,8 @@ const Reply = require('../models/reply')
 const Price = require('../models/price')
 const Liquidity = require('../models/liquidity')
 const {takeScreenshot} = require('../controllers/screenshot')
+const ChartJSImage = require('chart.js-image')
+const {uploadAndDestroy} = require('../controllers/skynet')
 
 const prefix = '!'
 
@@ -86,7 +88,63 @@ const discordController = async function (message) {
         limit:10
       })
 
-      console.log(price)
+      const labels = price.map(p=>{
+        return `${p.createdAt.getHours()}:${p.createdAt.getMinutes()}`
+      })
+
+      const data = price.map(p=>{
+        return parseFloat(p.tbotUsdc)
+      })
+
+      const parameters = {
+        "type": "line",
+        "data": {
+          "labels": [...labels],
+          "datasets": [
+            {
+              "borderColor": "rgb(255,+99,+132)",
+              "backgroundColor": "rgba(255,+99,+132,+.5)",
+              "data": [...data]
+            }
+          ]
+        },
+        "options": {
+          "title": {
+            "display": false,
+          },
+          "scales": {
+            "xAxes": [
+              {
+                "scaleLabel": {
+                  "display": true,
+                  "labelString": "Date"
+                }
+              }
+            ],
+            "yAxes": [
+              {
+                "stacked": true,
+                "scaleLabel": {
+                  "display": true,
+                  "labelString": "USDC"
+                }
+              }
+            ]
+          }
+        }
+      }
+
+      // console.log(parameters.data.labels)
+
+      const lineChart = ChartJSImage().chart(parameters) // Line chart
+      .backgroundColor('white')
+      .width(500) // 500px
+      .height(300) // 300px
+
+      await lineChart.toFile('chart.png')
+
+      const link = await uploadAndDestroy('chart.png')
+      console.log(link)
 
       // setTimeout(() => {
       //   const embed = new Discord.MessageEmbed()

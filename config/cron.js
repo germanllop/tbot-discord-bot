@@ -18,7 +18,7 @@ const provider = new ethers.providers.EtherscanProvider('homestead', process.env
 const chainId = ChainId.MAINNET
 
 const JobPrice = new CronJob('00 * * * * *', async function () {
-
+  const time = new Date()
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
   const pageConfig = {
@@ -39,7 +39,6 @@ const JobPrice = new CronJob('00 * * * * *', async function () {
 
   await browser.close()
 
-
   // const tokenAddressTBOT = await Web3.utils.toChecksumAddress('0xa4f2fdb0a5842d62bbaa5b903f09687b85e4bf59')
   const tokenAddressUSDC = await Web3.utils.toChecksumAddress('0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48')
 
@@ -53,6 +52,40 @@ const JobPrice = new CronJob('00 * * * * *', async function () {
   const usdcEth = route.midPrice.invert().toSignificant(6)
 
   const tbotUsdc = (parseFloat(ethUsdc)/parseFloat(ethTbot)).toFixed(2)
+  const minute = time.getMinutes()
+  let fiveM = null
+  let fifteenM = null
+  let thirtyM = null
+  let oneH = null
+  let fourH = null
+  let twelveH = null
+  let oneD = null
+  let treeD = null
+  let oneW = null
+  if([0,5,10,15,20,25,30,35,40,45,50,55].includes(minute)){
+    let prices = await Price.find({createdAt:{$gte:time-60000*5}}, {}, {
+      sort: {
+        'createdAt': -1
+      }
+    })
+    prices.reverse()
+    let high = 0
+    let low = Infinity
+    for(let p of prices){
+      if(parseFloat(p.tbotUsdc)<=low){
+        low = parseFloat(p.tbotUsdc)
+      }
+      if(parseFloat(p.tbotUsdc)>=high){
+        high = parseFloat(p.tbotUsdc)
+      }
+    }
+    fiveM={
+      high,
+      low,
+      open:parseFloat(prices[0].tbotUsdc),
+      close: parseFloat(tbotUsdc)
+    }
+  }
 
   const savedPrice = await Price.create({
     ethTbot,
@@ -60,7 +93,8 @@ const JobPrice = new CronJob('00 * * * * *', async function () {
     tbotUsdc,
     ethUsdc,
     usdcEth,
-    priceImpact
+    priceImpact,
+    fiveM,
   })
 
   console.log(savedPrice)
