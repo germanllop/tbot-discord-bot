@@ -17,7 +17,7 @@ const Web3 = require('web3')
 const provider = new ethers.providers.EtherscanProvider('homestead', process.env.ETHSCAN_API)
 const chainId = ChainId.MAINNET
 
-const JobPrice = new CronJob('00 */5 * * * *', async function () {
+const JobPrice = new CronJob('00 * * * * *', async function () {
 
   const browser = await puppeteer.launch()
   const page = await browser.newPage()
@@ -31,9 +31,9 @@ const JobPrice = new CronJob('00 */5 * * * *', async function () {
   await page.type('#swap-currency-input > div > div > input', '1')
   await page.waitForSelector('#swap-page > div > div > div:nth-child(2) > button > div > div')
   const elem = await page.$('#swap-page > div > div > div:nth-child(2) > button > div > div')
-  const ethTbot = await elem.evaluate(el => el.textContent)
+  const ethTbot = (await elem.evaluate(el => el.textContent)).split('=')[1].replace('TBOT','').trim()
   await elem.click()
-  const tbotEth = await elem.evaluate(el => el.textContent)
+  const tbotEth = (await elem.evaluate(el => el.textContent)).split('=')[1].replace('WETH9','').trim()
 
   const priceImpact = await (await page.$('reach-portal > div > div > div > div:nth-child(3) > div:nth-child(2) > div')).evaluate(el => el.textContent)
 
@@ -52,9 +52,12 @@ const JobPrice = new CronJob('00 */5 * * * *', async function () {
   const ethUsdc = route.midPrice.toSignificant(6)
   const usdcEth = route.midPrice.invert().toSignificant(6)
 
+  const tbotUsdc = (parseFloat(ethUsdc)/parseFloat(ethTbot)).toFixed(2)
+
   const savedPrice = await Price.create({
     ethTbot,
     tbotEth,
+    tbotUsdc,
     ethUsdc,
     usdcEth,
     priceImpact

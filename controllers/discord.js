@@ -53,11 +53,11 @@ const discordController = async function (message) {
           .setAuthor('t-botmonitor', 'https://cdn.discordapp.com/icons/856686688034226187/779e516a1bf47d474b11074f6f91e5e7.png?size=128', 'https://tbotarmy.com')
           .addFields({
             name: '1 ETH',
-            value: `${price.ethTbot.split('= ')[1]}`,
+            value: `${price.ethTbot} TBOT`,
             inline: true
           }, {
             name: '1 TBOT',
-            value: `${price.tbotEth.replace('WETH9','ETH').split('= ')[1]}`,
+            value: `${price.tbotEth} ETH`,
             inline: true
           },
           { name: '\u200B', value: '\u200B' },
@@ -68,7 +68,7 @@ const discordController = async function (message) {
           },
           {
             name: '1 TBOT',
-            value: `${(parseFloat(price.ethUsdc)/parseFloat(price.ethTbot.split('= ')[1].replace('TBOT'))).toFixed(2)} USDC`, // ethusdc / ethtbot = tbotusdc
+            value: `${parseFloat(price.tbotUsdc).toFixed(2)} USDC`, // tbotusdc
             inline: true
           }
           )
@@ -76,21 +76,28 @@ const discordController = async function (message) {
 
         message.channel.send(embed)
       }, 2000)
+
     } else if (command === "graph") {
-      const url = 'https://www.dextools.io/app/uniswap/pair-explorer/0xb6c05fb8d5a242d92e72ce63c58ec94d93d11060'
-      const selector = 'body > div.js-rootresizer__contents'
-      const shot = await takeScreenshot(url,selector)
 
-      setTimeout(() => {
-        const embed = new Discord.MessageEmbed()
-          .setColor('#7289da')
-          .setTitle('ETH/TBOT Price Graph')
-          .setAuthor('t-botmonitor', 'https://cdn.discordapp.com/icons/856686688034226187/779e516a1bf47d474b11074f6f91e5e7.png?size=128', 'https://tbotarmy.com')
-          .setImage(shot)
-          .setTimestamp()
+      const price = await Price.find({}, {}, {
+        sort: {
+          'createdAt': -1
+        },
+        limit:10
+      })
 
-        message.channel.send(embed)
-      }, 2000)
+      console.log(price)
+
+      // setTimeout(() => {
+      //   const embed = new Discord.MessageEmbed()
+      //     .setColor('#7289da')
+      //     .setTitle('ETH/TBOT Price Graph')
+      //     .setAuthor('t-botmonitor', 'https://cdn.discordapp.com/icons/856686688034226187/779e516a1bf47d474b11074f6f91e5e7.png?size=128', 'https://tbotarmy.com')
+      //     .setImage(shot)
+      //     .setTimestamp()
+
+      //   message.channel.send(embed)
+      // }, 2000)
 
     } else if (command === "liquidity") {
       const liquidity = await Liquidity.findOne({}, {}, {

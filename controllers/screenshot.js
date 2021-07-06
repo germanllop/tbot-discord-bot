@@ -11,9 +11,9 @@ async function takeScreenshot(url,selector) {
   }
   const name = new Date().getTime()
 
-  await page.goto('https://www.dextools.io/app/uniswap/pair-explorer/0xb6c05fb8d5a242d92e72ce63c58ec94d93d11060', pageConfig)
-  await page.waitForSelector('body > div.js-rootresizer__contents')
-  const elem = await page.$('body > div.js-rootresizer__contents')
+  await page.goto(url, pageConfig)
+  await page.waitForSelector(selector)
+  const elem = await page.$(selector)
 
   await elem.screenshot({
     path: name + '.jpg'
