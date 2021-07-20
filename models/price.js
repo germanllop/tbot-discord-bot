@@ -5,10 +5,6 @@ const priceSchema = new mongoose.Schema({
     type:String,
     default:''
   },
-  // ethTbotImage:{
-  //   type:String,
-  //   default:''
-  // },
   tbotEth: {
     type:String,
     default:''
@@ -24,18 +20,6 @@ const priceSchema = new mongoose.Schema({
   usdcEth:{
     type:String,
     default:''
-  },
-  // tbotEthImage:{
-  //   type:String,
-  //   default:''
-  // },
-  priceImpact:{
-    type:String,
-    default:'0%'
-  },
-  fiveM:{
-    type: Object,
-    default:null
   }
 },{
   timestamps:true

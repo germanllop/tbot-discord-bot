@@ -2,7 +2,6 @@ const Discord = require('discord.js')
 const Reply = require('../models/reply')
 const Price = require('../models/price')
 const Liquidity = require('../models/liquidity')
-const {takeScreenshot} = require('../controllers/screenshot')
 const ChartJSImage = require('chart.js-image')
 const {uploadAndDestroy} = require('../controllers/skynet')
 
@@ -42,10 +41,22 @@ const discordController = async function (message) {
 
     // } else if (command === "price" && message.channel.name === process.env.TEXT_CHANNEL) { // If there is only one channel to respond
     } else if (command === "price") {
-      const price = await Price.findOne({}, {}, {
-        sort: {
-          'createdAt': -1
-        }
+
+      const getPrice = require('../controllers/unigraph')
+
+      const tbotEth = {id:'50722', token0:'TBOT', token1:'ETH'}
+      const usdcEth = {id:'10001', token0:'USDC', token1:'ETH'}
+
+      const priceTbotEth = await getPrice(tbotEth)
+      const priceUsdcEth = await getPrice(usdcEth)
+
+      const price= await Price.create({
+        tbotEth: priceTbotEth.price,
+        ethTbot: priceTbotEth.priceReversed,
+        tbotUsdc:(parseFloat(priceTbotEth.price)*parseFloat(priceUsdcEth.priceReversed)).toFixed(2),
+        usdcEth: priceUsdcEth.price,
+        ethUsdc:priceUsdcEth.priceReversed
+
       })
 
       setTimeout(() => {

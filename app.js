@@ -22,7 +22,6 @@ app.use(express.static('public'))
 const api = require('./api')
 app.use('/api', api)
 
-cron.JobPrice.start() // Starts desired cronjob
 cron.JobLiquidity.start() // Starts desired cronjob
 
 app.listen(port, () => {
