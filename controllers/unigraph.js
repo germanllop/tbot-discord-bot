@@ -248,4 +248,76 @@ const positionQuery = `
     }
 `
 
-module.exports = getPosition
+const liquidityQuery = `
+query tokenPosition {
+  position(id: "50722"){
+    token0{
+      symbol
+      derivedETH
+      id
+      decimals
+  }
+  token1{
+      symbol
+      derivedETH
+      id
+      decimals
+  }
+    pool{
+        id
+        liquidity
+        totalValueLockedUSD
+        totalValueLockedETH
+        totalValueLockedToken0
+        totalValueLockedToken1
+        volumeUSD
+        feesUSD
+        poolDayData{
+          feesUSD
+          volumeUSD
+          date
+        }
+        sqrtPrice
+        tick
+        feeGrowthGlobal0X128
+        feeGrowthGlobal1X128
+    }
+
+}
+}
+`
+async function getLiquidityInfo(){
+  let res = await axios.post(graphqlEndpoint, {
+    query: liquidityQuery,
+  })
+
+  const data = res.data.data.position
+
+  var max = 0
+  var todayData = {
+    feesUSD:'0',
+    volumeUSD:'0'
+  }
+
+  for (const day of data.pool.poolDayData) {
+    if(day.date > max){
+      max = day.date
+      todayData = day
+    }
+  }
+
+  const liquidity = {
+    ethTbot:1/parseFloat(data.token0.derivedETH),
+    tbotEth:data.token0.derivedETH,
+    tbotLocked:data.pool.totalValueLockedToken0,
+    ethLocked:data.pool.totalValueLockedToken1,
+    tvl:data.pool.totalValueLockedUSD,
+    volume24h:todayData.volumeUSD,
+    fees24h:todayData.feesUSD,
+  }
+
+    return liquidity
+
+}
+
+module.exports = {getPosition, getLiquidityInfo}

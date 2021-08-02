@@ -44,13 +44,13 @@ const discordController = async function (message) {
     // } else if (command === "price" && message.channel.name === process.env.TEXT_CHANNEL) { // If there is only one channel to respond
     } else if (command === "price") {
 
-      const getPrice = require('../controllers/unigraph')
+      const {getPosition} = require('../controllers/unigraph')
 
       const tbotEth = {id:'50722', token0:'TBOT', token1:'ETH'}
       const usdcEth = {id:'10001', token0:'USDC', token1:'ETH'}
 
-      const priceTbotEth = await getPrice(tbotEth)
-      const priceUsdcEth = await getPrice(usdcEth)
+      const priceTbotEth = await getPosition(tbotEth)
+      const priceUsdcEth = await getPosition(usdcEth)
 
       const price= await Price.create({
         tbotEth: priceTbotEth.price,
@@ -171,10 +171,19 @@ const discordController = async function (message) {
       // }, 2000)
 
     } else if (command === "liquidity") {
-      const liquidity = await Liquidity.findOne({}, {}, {
-        sort: {
-          'createdAt': -1
-        }
+
+      const {getLiquidityInfo} = require('../controllers/unigraph')
+
+      const liquidity = await getLiquidityInfo()
+
+      await Liquidity.create({
+        ethTbot:liquidity.ethTbot,
+        tbotEth:liquidity.tbotEth,
+        tbotLocked:liquidity.tbotLocked,
+        ethLocked:liquidity.ethLocked,
+        tvl:liquidity.tvl,
+        volume24h:liquidity.volume24h,
+        fees24h:liquidity.fees24h
       })
 
       setTimeout(() => {
@@ -184,26 +193,26 @@ const discordController = async function (message) {
           .setAuthor('t-botmonitor', 'https://cdn.discordapp.com/icons/856686688034226187/779e516a1bf47d474b11074f6f91e5e7.png?size=128', 'https://tbotarmy.com')
           .addFields({
             name: '1 ETH',
-            value: `${liquidity.ethTbot.split('= ')[1]}`,
+            value: `${liquidity.ethTbot.toFixed(4)}`,
             inline: true
           }, {
             name: '1 TBOT',
-            value: `${liquidity.tbotEth.split('= ')[1]}`,
+            value: `${parseFloat(liquidity.tbotEth).toFixed(4)}`,
             inline: true
           }, {
             name: 'Total Tokens Locked',
-            value: `TBOT: ${liquidity.tbotLocked} / ETH: ${liquidity.ethLocked}`
+            value: `TBOT: ${parseFloat(liquidity.tbotLocked).toFixed(2)} / ETH: ${parseFloat(liquidity.ethLocked).toFixed(2)}`
           }, {
             name: 'TVL',
-            value: `${liquidity.tvl}`,
+            value: `${parseFloat(liquidity.tvl).toFixed(2)}`,
             inline: true
           }, {
             name: 'Volume 24h',
-            value: `${liquidity.volume24h}`,
+            value: `${parseFloat(liquidity.volume24h).toFixed(2)}`,
             inline: true
           }, {
             name: '24h Fees',
-            value: `${liquidity.fees24h}`,
+            value: `${parseFloat(liquidity.fees24h).toFixed(2)}`,
             inline: true
           })
           .setTimestamp()

@@ -46,5 +46,5 @@ const JobLiquidity = new CronJob('30 7/10 * * * *', async function () {
 
 
 module.exports = {
-  JobLiquidity
+  // JobLiquidity
 }
