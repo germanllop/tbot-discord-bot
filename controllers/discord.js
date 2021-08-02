@@ -193,26 +193,26 @@ const discordController = async function (message) {
           .setAuthor('t-botmonitor', 'https://cdn.discordapp.com/icons/856686688034226187/779e516a1bf47d474b11074f6f91e5e7.png?size=128', 'https://tbotarmy.com')
           .addFields({
             name: '1 ETH',
-            value: `${liquidity.ethTbot.toFixed(4)}`,
+            value: `${liquidity.ethTbot.toFixed(4)} TBOT`,
             inline: true
           }, {
             name: '1 TBOT',
-            value: `${parseFloat(liquidity.tbotEth).toFixed(4)}`,
+            value: `${parseFloat(liquidity.tbotEth).toFixed(4)} ETH`,
             inline: true
           }, {
             name: 'Total Tokens Locked',
             value: `TBOT: ${parseFloat(liquidity.tbotLocked).toFixed(2)} / ETH: ${parseFloat(liquidity.ethLocked).toFixed(2)}`
           }, {
             name: 'TVL',
-            value: `${parseFloat(liquidity.tvl).toFixed(2)}`,
+            value: `${parseFloat(liquidity.tvl).toFixed(2).toLocaleString('en-US',{style:'currency',currency:'USD'})}`,
             inline: true
           }, {
             name: 'Volume 24h',
-            value: `${parseFloat(liquidity.volume24h).toFixed(2)}`,
+            value: `${parseFloat(liquidity.volume24h).toFixed(2).toLocaleString('en-US',{style:'currency',currency:'USD'})}`,
             inline: true
           }, {
             name: '24h Fees',
-            value: `${parseFloat(liquidity.fees24h).toFixed(2)}`,
+            value: `${parseFloat(liquidity.fees24h).toFixed(2).toLocaleString('en-US',{style:'currency',currency:'USD'})}`,
             inline: true
           })
           .setTimestamp()
