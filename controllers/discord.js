@@ -204,15 +204,15 @@ const discordController = async function (message) {
             value: `TBOT: ${parseFloat(liquidity.tbotLocked).toFixed(2)} / ETH: ${parseFloat(liquidity.ethLocked).toFixed(2)}`
           }, {
             name: 'TVL',
-            value: ` ${new Intl.NumberFormat('en-US', { notation: 'compact',style: 'currency', currency: 'USD' }).format(parseFloat(liquidity.tvl))}`,
+            value: `${new Intl.NumberFormat('en-US', { notation: 'compact',style: 'currency', currency: 'USD' }).format(parseFloat(liquidity.tvl))}`,
             inline: true
           }, {
             name: 'Volume 24h',
-            value: ` ${parseFloat(liquidity.volume24h)}`,
+            value: ` ${new Intl.NumberFormat('en-US', { notation: 'compact',style: 'currency', currency: 'USD' }).format(parseFloat(liquidity.volume24h))}`,
             inline: true
           }, {
             name: '24h Fees',
-            value: ` ${parseFloat(liquidity.fees24h)}`,
+            value: ` ${new Intl.NumberFormat('en-US', { notation: 'compact',style: 'currency', currency: 'USD' }).format(parseFloat(liquidity.fees24h))}`,
             inline: true
           })
           .setTimestamp()
