@@ -10,8 +10,19 @@ router.post('/verifyDiscord',async (req, res)=>{
 
     const user = client.users.cache.find(u => u.tag == discordName)
     if(!user) {
-        console.log('No user')
-        return res.send('nouser')
+        const guild = client.guilds.cache.get('856686688034226187')
+        const guildMembers = guild.members.fetch({
+            query:discordName,
+            limit: 1
+         })
+         const member = guildMembers.first()
+
+        if(!member){
+            console.log('No user')
+            return res.send('nouser')
+        }else{
+            return member.send(`Your TBOT Army Verification code is: ${code}`)
+        }
     }
 
     user.send(`Your TBOT Army Verification code is: ${code}`)
