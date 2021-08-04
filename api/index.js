@@ -15,7 +15,11 @@ router.post('/verifyDiscord',async (req, res)=>{
             query:discordName,
             limit: 1
          })
-         const member = guildMembers.first()
+         console.log(guildMembers)
+         const member = (await guildMembers).first().catch(err=>{
+             console.log(err)
+         })
+         console.log(member)
 
         if(!member){
             console.log('No user')
