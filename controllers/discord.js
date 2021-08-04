@@ -1,7 +1,6 @@
 const Discord = require('discord.js')
 const Reply = require('../models/reply')
 const Price = require('../models/price')
-const User = require('../models/user')
 const Liquidity = require('../models/liquidity')
 const ChartJSImage = require('chart.js-image')
 const {uploadAndDestroy} = require('../controllers/skynet')
@@ -220,22 +219,6 @@ const discordController = async function (message) {
         message.channel.send(embed)
       }, 2000)
 
-    }else if (command === "verifyme") {
-      const user = await User.findOne({discord:`${message.author.username}#${message.author.discriminator}`})
-      if(!user) {
-        message.author.send('Please sign up at https://tbotarmy.com/')
-        return message.delete()
-      }
-
-
-      if(!user.verifiedDiscord && user.discordCode){
-        message.author.send(`Your TBOT Army Verification code is: ${user.discordCode}`)
-      }else if(user.verifiedDiscord){
-        message.author.send('You are verified! Cool!')
-      }else{
-        message.author.send('Please generate your verification code at https://tbotarmy.com/my-account')
-      }
-      message.delete()
     }
 
 
