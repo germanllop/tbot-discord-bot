@@ -21,7 +21,8 @@ router.post('/verifyDiscord',async (req, res)=>{
             console.log('No user')
             return res.send('nouser')
         }else{
-            return member.send(`Your TBOT Army Verification code is: ${code}`)
+            member.send(`Your TBOT Army Verification code is: ${code}`)
+            return res.send('OK')
         }
     }
 
