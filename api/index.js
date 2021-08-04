@@ -8,7 +8,7 @@ router.post('/verifyDiscord',async (req, res)=>{
 
     console.log(discordName, code)
 
-    const user = client.users.cache.find(u => u.tag === discordName)
+    const user = client.users.cache.find(u => u.tag == discordName)
     if(!user) {
         console.log('No user')
         return res.send('nouser')
