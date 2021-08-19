@@ -20,6 +20,10 @@ const priceSchema = new mongoose.Schema({
   usdcEth:{
     type:String,
     default:''
+  },
+  amountTbot:{
+    type:String,
+    default:''
   }
 },{
   timestamps:true

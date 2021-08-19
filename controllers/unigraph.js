@@ -4,7 +4,7 @@ const axios = require('axios')
 const x96 = Math.pow(2, 96)
 const x128 = Math.pow(2, 128)
 const graphqlEndpoint =
-  'https://api.thegraph.com/subgraphs/name/benesjan/uniswap-v3-subgraph'
+  'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3'
 // Constants End -----------------------------------------------------------
 
 // Main function -----------------------------------------------------------
@@ -249,22 +249,10 @@ const positionQuery = `
 `
 
 const liquidityQuery = `
-query tokenPosition {
-  position(id: "50722"){
-    token0{
-      symbol
-      derivedETH
-      id
-      decimals
-  }
-  token1{
-      symbol
-      derivedETH
-      id
-      decimals
-  }
-    pool{
-        id
+query loquidityPool {
+  pool(id:"0xb6c05fb8d5a242d92e72ce63c58ec94d93d11060")
+  {
+    id
         liquidity
         totalValueLockedUSD
         totalValueLockedETH
@@ -281,17 +269,39 @@ query tokenPosition {
         tick
         feeGrowthGlobal0X128
         feeGrowthGlobal1X128
-    }
-
-}
+  }
 }
 `
+const swapQuery = `
+  query tokenPrice {
+    swaps(first:1,orderBy:timestamp,
+      orderDirection:desc,
+      where:{
+      token1:"0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+      token0:"0xa4f2fdb0a5842d62bbaa5b903f09687b85e4bf59"
+    }){
+      timestamp
+      token0{
+        symbol
+      }
+      token1{
+        symbol
+      }
+      tick
+      amount0
+      amount1
+      amountUSD
+      sqrtPriceX96
+    }
+  }
+`
+
 async function getLiquidityInfo(){
   let res = await axios.post(graphqlEndpoint, {
     query: liquidityQuery,
   })
 
-  const data = res.data.data.position
+  const data = res.data.data
 
   var max = 0
   var todayData = {
@@ -307,8 +317,8 @@ async function getLiquidityInfo(){
   }
 
   const liquidity = {
-    ethTbot:1/parseFloat(data.token0.derivedETH),
-    tbotEth:data.token0.derivedETH,
+    ethTbot:1/parseFloat(sqrtPriceToPrice(data.pool.sqrtPrice)),
+    tbotEth:sqrtPriceToPrice(data.pool.sqrtPrice),
     tbotLocked:data.pool.totalValueLockedToken0,
     ethLocked:data.pool.totalValueLockedToken1,
     tvl:data.pool.totalValueLockedUSD,
@@ -320,4 +330,25 @@ async function getLiquidityInfo(){
 
 }
 
-module.exports = {getPosition, getLiquidityInfo}
+async function getSwapInfo(){
+  let res = await axios.post(graphqlEndpoint, {
+    query: swapQuery,
+  })
+
+  const data = res.data.data.swaps[0]
+
+  const result = {
+    price:sqrtPriceToPrice(data.sqrtPriceX96),
+    priceReversed:1/parseFloat(sqrtPriceToPrice(data.sqrtPriceX96)),
+    amountTbot:data.amount0
+  }
+
+  return result
+
+}
+
+module.exports = {
+  getPosition,
+  getLiquidityInfo,
+  getSwapInfo
+}

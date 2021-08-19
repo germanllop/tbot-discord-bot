@@ -43,57 +43,55 @@ const discordController = async function (message) {
     // } else if (command === "price" && message.channel.name === process.env.TEXT_CHANNEL) { // If there is only one channel to respond
     } else if (command === "price") {
 
-      message.channel.send('This command is under maintenance.')
+      // message.channel.send('This command is under maintenance.')
 
-      // const {getSwapInfo} = require('../controllers/unigraph')
+      const {getSwapInfo,getPosition} = require('../controllers/unigraph')
 
-      // getSwapInfo()
+      const usdcEth = {id:'10001', token0:'USDC', token1:'ETH'}
 
-      // const tbotEth = {id:'50722', token0:'TBOT', token1:'ETH'}
-      // const usdcEth = {id:'10001', token0:'USDC', token1:'ETH'}
+      const priceTbotEth = await getSwapInfo()
+      const priceUsdcEth = await getPosition(usdcEth)
 
-      // const priceTbotEth = await getPosition(tbotEth)
-      // const priceUsdcEth = await getPosition(usdcEth)
+      const price= await Price.create({
+        tbotEth: priceTbotEth.price,
+        ethTbot: priceTbotEth.priceReversed,
+        amountTbot:priceTbotEth.amountTbot,
+        tbotUsdc:(parseFloat(priceTbotEth.price)*parseFloat(priceUsdcEth.priceReversed)).toFixed(2),
+        usdcEth: priceUsdcEth.price,
+        ethUsdc:priceUsdcEth.priceReversed
 
-      // const price= await Price.create({
-      //   tbotEth: priceTbotEth.price,
-      //   ethTbot: priceTbotEth.priceReversed,
-      //   tbotUsdc:(parseFloat(priceTbotEth.price)*parseFloat(priceUsdcEth.priceReversed)).toFixed(2),
-      //   usdcEth: priceUsdcEth.price,
-      //   ethUsdc:priceUsdcEth.priceReversed
+      })
 
-      // })
+      setTimeout(() => {
+        const embed = new Discord.MessageEmbed()
+          .setColor('#7289da')
+          .setTitle('TBOT Current Trading Price')
+          .setAuthor('t-botmonitor', 'https://cdn.discordapp.com/icons/856686688034226187/779e516a1bf47d474b11074f6f91e5e7.png?size=128', 'https://tbotarmy.com')
+          .addFields({
+            name: '1 ETH',
+            value: `${parseFloat(price.ethTbot).toFixed(5)} TBOT`,
+            inline: true
+          }, {
+            name: '1 TBOT',
+            value: `${parseFloat(price.tbotEth).toFixed(5)} ETH`,
+            inline: true
+          },
+          { name: 'For an amount of:', value: `${Math.abs(parseFloat(price.amountTbot).toFixed(5))} TBOT` },
+          {
+            name: '1 ETH',
+            value: `${parseFloat(price.ethUsdc).toFixed(2)} USDC`, // ethusdc
+            inline: true
+          },
+          {
+            name: '1 TBOT',
+            value: `${parseFloat(price.tbotUsdc).toFixed(2)} USDC`, // tbotusdc
+            inline: true
+          }
+          )
+          .setTimestamp()
 
-      // setTimeout(() => {
-      //   const embed = new Discord.MessageEmbed()
-      //     .setColor('#7289da')
-      //     .setTitle('TBOT Current Trading Price')
-      //     .setAuthor('t-botmonitor', 'https://cdn.discordapp.com/icons/856686688034226187/779e516a1bf47d474b11074f6f91e5e7.png?size=128', 'https://tbotarmy.com')
-      //     .addFields({
-      //       name: '1 ETH',
-      //       value: `${price.ethTbot} TBOT`,
-      //       inline: true
-      //     }, {
-      //       name: '1 TBOT',
-      //       value: `${price.tbotEth} ETH`,
-      //       inline: true
-      //     },
-      //     { name: '\u200B', value: '\u200B' },
-      //     {
-      //       name: '1 ETH',
-      //       value: `${parseFloat(price.ethUsdc).toFixed(2)} USDC`, // ethusdc
-      //       inline: true
-      //     },
-      //     {
-      //       name: '1 TBOT',
-      //       value: `${parseFloat(price.tbotUsdc).toFixed(2)} USDC`, // tbotusdc
-      //       inline: true
-      //     }
-      //     )
-      //     .setTimestamp()
-
-      //   message.channel.send(embed)
-      // }, 2000)
+        message.channel.send(embed)
+      }, 2000)
 
     } else if (command === "graph") {
 
@@ -175,7 +173,7 @@ const discordController = async function (message) {
 
     } else if (command === "liquidity") {
 
-      return message.channel.send('This command is under maintenance.')
+      // return message.channel.send('This command is under maintenance.')
 
       const {getLiquidityInfo} = require('../controllers/unigraph')
 
