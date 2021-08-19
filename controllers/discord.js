@@ -45,7 +45,9 @@ const discordController = async function (message) {
 
       message.channel.send('This command is under maintenance.')
 
-      // const {getPosition} = require('../controllers/unigraph')
+      // const {getSwapInfo} = require('../controllers/unigraph')
+
+      // getSwapInfo()
 
       // const tbotEth = {id:'50722', token0:'TBOT', token1:'ETH'}
       // const usdcEth = {id:'10001', token0:'USDC', token1:'ETH'}
@@ -172,6 +174,8 @@ const discordController = async function (message) {
       // }, 2000)
 
     } else if (command === "liquidity") {
+
+      return message.channel.send('This command is under maintenance.')
 
       const {getLiquidityInfo} = require('../controllers/unigraph')
 
